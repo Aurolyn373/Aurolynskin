@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aurolyn Skin</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f0eb;
+      color: #634c4a;
+      text-align: center;
+    }
+    header {
+      padding: 55px 20px 25px;
+    }
+    h1 {
+      font-family: Georgia, serif;
+      font-weight: normal;
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+    .tagline {
+      font-style: italic;
+      color: #987d79;
+    }
+    main {
+      background: white;
+      margin: 20px;
+      padding: 28px 20px;
+      border-radius: 24px;
+      box-shadow: 0 6px 25px #634c4a12;
+    }
+    button, .photo-button {
+      display: block;
+      width: 100%;
+      background: #94746d;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 17px;
+      margin: 15px 0;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    input[type=file] {
+      display: none;
+    }
+    #preview {
+      display: none;
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+    #status {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .note {
+      font-size: 13px;
+      color: #8d7773;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Aurolyn Skin</h1>
+  <p class="tagline">Beautifully Understood</p>
+  <p>Your personalized skincare journey begins here.</p>
+</header>
+
+<main>
+  <h2>Discover Your Skin</h2>
+  <p>Start with a selfie in natural lighting.</p>
+
+  <label for="photo" class="photo-button">
+    Choose or Take a Photo
+  </label>
+
+  <input
+    id="photo"
+    type="file"
+    accept="image/*"
+  >
+
+  <img id="preview" alt="Your selected selfie">
+
+  <p id="status" role="status" aria-live="polite">
+    Waiting for your photo.
+  </p>
+
+  <button id="clear" type="button">
+    Remove Photo
+  </button>
+
+  <p class="note">
+    Your photo stays in this browser session.
+    It is not uploaded or saved by this app.
+    This is a camera test, not a skin diagnosis.
+  </p>
+</main>
+
+<script>
+  const input = document.getElementById("photo");
+  const preview = document.getElementById("preview");
+  const status = document.getElementById("status");
+  const clear = document.getElementById("clear");
+
+  let photoURL = null;
+
+  function removePhoto() {
+    if (photoURL) {
+      URL.revokeObjectURL(photoURL);
+      photoURL = null;
+    }
+    input.value = "";
+    preview.removeAttribute("src");
+    preview.style.display = "none";
+    status.textContent = "Waiting for your photo.";
+  }
+
+  input.addEventListener("change", function () {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      removePhoto();
+      status.textContent = "Please choose an image.";
+      return;
+    }
+
+    if (photoURL) URL.revokeObjectURL(photoURL);
+
+    photoURL = URL.createObjectURL(file);
+
+    preview.onload = function () {
+      preview.style.display = "block";
+      status.textContent = "Your photo is ready!";
+    };
+
+    preview.onerror = function () {
+      removePhoto();
+      status.textContent =
+        "This photo could not be displayed.";
+    };
+
+    preview.src = photoURL;
+  });
+
+  clear.addEventListener("click", removePhoto);
+</script>
+
+</body>
+</html>
